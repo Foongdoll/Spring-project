@@ -4,5 +4,5 @@
 <!--*안녕* 하세요.     <!-- * : 기울임 -->
 **반갑**습니다.    <!-- ** : 진하게 -->
 ~~반갑~~습니다.    <!-- ~~: 취소선 -->
-<img src="https://health.chosun.com/site/data/img_dir/2021/07/26/2021072601325_0.jpg" width="500px">
+<img src="![image](https://user-images.githubusercontent.com/117240812/222638287-440b3842-bf00-4b7e-8bca-9ed9c7e00689.png)" width="500px">
  -->
