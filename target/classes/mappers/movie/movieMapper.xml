@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.green2209S_10.dao.MovieDAO">
+	<select id="getRegion" resultType="com.spring.green2209S_10.vo.CgvTicketingVO">
+		select * from fastticketing_Region where movieName = #{movieName}
+	</select>
+	
+	<select id="getTown" resultType="com.spring.green2209S_10.vo.CgvTicketingVO">
+		select ${strSw} from fastticketing_Town where movieName = #{movieName};
+	</select>
+	
+	<select id="getdateTime" resultType="com.spring.green2209S_10.vo.CgvTicketingVO">
+		select * from fastticketing_screentime where movieName = #{movieName} and town like concat('%',#{town},'%') group by screenDate;
+	</select>
+	
+	<select id="getScreenTime" resultType="com.spring.green2209S_10.vo.CgvTicketingVO">
+		select *,(SELECT SCREENTYPE FROM fastticketing_REGION WHERE moviename = #{movieName}) as screenType from fastticketing_screentime where movieName = #{movieName} and screendate = #{date} and town like concat('%',#{town},'%'); 
+	</select>
+	
+	<select id="getImgName" resultType="String">
+		select img from cgvmainImg where movieName = #{movieName}
+	</select>
+	
+	<select id="getResSeat" resultType="int">
+	<if test="sw == 0">
+		SELECT SEAT FROM fastticketing_screentime 
+			WHERE MOVIENAME = #{vo.movieName} 
+	    AND TOWN LIKE CONCAT('%',#{vo.town},'%') 
+	    AND SCREENDATE = #{vo.screenDate}
+	    AND SCREENTIME = #{vo.screenTime};
+  </if>	    
+	<if test="sw == 1">
+		SELECT S_SEAT FROM CGVSEAT 
+			WHERE S_MOVIENAME = #{vo.movieName} 
+	    AND S_TOWN LIKE CONCAT('%',#{vo.town},'%') 
+	    AND S_SCREENDATE = #{vo.screenDate}
+	    AND S_SCREENTIME = #{vo.screenTime};
+  </if>	    
+	</select>
+	
+	<select id="getMovieChartImg" resultType="com.spring.green2209S_10.vo.CgvMovieChartVO">
+		SELECT * FROM CGVMOVIECHART;
+	</select>
+	
+	<select id="getMoiveDetail" resultType="com.spring.green2209S_10.vo.CgvMovieDetailVO">
+		SELECT * FROM CGVMOVIEDETAIL WHERE MOVIETITLEKO = #{movieTitle};
+	</select>
+	
+	<select id="getMovieTrailer" resultType="com.spring.green2209S_10.vo.CgvMovieDetailVO">
+		SELECT * FROM CGVMOVIETRAILER WHERE MOVIETITLE = #{movieTitle}
+	</select>
+	
+	<select id="getTotRecCnt" resultType="int">
+		SELECT COUNT(*) FROM ${tableName} WHERE RE_MOVIETITLE = #{movieTitle};
+	</select>
+	
+	<select id="getMovieReview" resultType="com.spring.green2209S_10.vo.CgvReviewVO">
+		SELECT * FROM CGVREVIEW WHERE RE_MOVIETITLE = #{movieTitle} order by idx desc limit #{startIndexNo}, #{pageSize}
+	</select>
+	
+	<select id="getFastticketingMovieImg" resultType="String">
+		SELECT IMG FROM CGVMOVIEDETAIL WHERE MOVIETITLEKO = #{movieName};
+	</select>
+	
+	<select id="getMovieStillcut" resultType="com.spring.green2209S_10.vo.CgvMovieStillcutVO">
+		SELECT * FROM CGVMOVIESTILLCUT WHERE MOVIETITLE = #{movieTitle};
+	</select>
+	
+	<select id="getWishList" resultType="com.spring.green2209S_10.vo.CgvWishListVO">
+		SELECT * FROM CGVWISHLIST WHERE WI_ID = #{id};
+	</select>
+	
+	<select id="getMovieScreenType" resultType="String">
+		SELECT SCREENTYPE FROM CGVMOVIEDETAIL WHERE MOVIETITLEKO = #{movieTitle} 
+	</select>
+	
+	<select id="getReservedSeat" resultType="com.spring.green2209S_10.vo.CgvTicketingPaymentVO">
+		SELECT * FROM CGVTICKET WHERE TK_TOWN LIKE CONCAT('%',#{vo.town},'%') AND TK_SCREENDATE = #{vo.screenDate} AND TK_SCREENTIME = #{vo.screenTime} AND TK_MOVIENAME = #{vo.movieName}; 
+	</select>
+	
+	<select id="getSeatTable" resultType="com.spring.green2209S_10.vo.CgvSeatVO">
+		SELECT * FROM CGVSEAT 
+			WHERE S_MOVIENAME = #{vo.tk_movieName} 
+			AND S_TOWN = #{vo.tk_town} 
+			AND S_SCREENDATE = #{vo.tk_screenDate} 
+			AND S_SCREENTIME = #{vo.tk_screenTime} 
+	</select>
+	
+	<select id="getReservedSeatAll" resultType="com.spring.green2209S_10.vo.CgvSeatVO">
+		SELECT * FROM CGVSEAT WHERE S_SCREENDATE = #{date} AND S_MOVIENAME = #{movieName} AND S_TOWN = #{town};
+	</select>
+	
+	<select id="getTkSeatList" resultType="com.spring.green2209S_10.vo.CgvTicketingPaymentVO">
+		SELECT * FROM cgvticket
+			WHERE tk_MOVIENAME = #{cvo.s_MovieName}
+			AND tk_TOWN = #{cvo.s_Town}
+			AND tk_SCREENDATE = #{cvo.s_ScreenDate}
+			AND tk_SCREENTIME = #{cvo.s_ScreenTime}
+	</select>
+	
+	<select id="getMyCouponList" resultType="com.spring.green2209S_10.vo.CgvCouponVO">
+		SELECT * FROM CGVCOUPON WHERE C_ID = #{id} AND TIMESTAMPDIFF(DAY,NOW(),C_LASTDATE) > 0;
+	</select>
+	
+	<select id="getRatingProcess" resultType="com.spring.green2209S_10.vo.CgvReviewVO">
+		SELECT SUM(RE_RATING) AS re_sumRating,COUNT(RE_RATING) AS re_cntRating FROM CGVREVIEW WHERE RE_MOVIETITLE = #{movieTitle};
+	</select>
+	
+	<select id="getMovieReviewCheck" resultType="String">
+		SELECT TK_CD FROM CGVTICKET WHERE TK_MOVIENAME = #{movieTitle} AND TK_ID = #{id} LIMIT 1 
+	</select>
+	
+	<select id="getTicketInfor" resultType="com.spring.green2209S_10.vo.CgvTicketingPaymentVO">
+		SELECT * FROM CGVTICKET WHERE TK_CD = #{cd}
+	</select>
+	
+	<select id="getDuplicationReviewCheck" resultType="String">
+		SELECT RE_ID FROM CGVREVIEW WHERE RE_ID = #{id} AND RE_MOVIETITLE = #{movieTitle} LIMIT 1
+	</select>
+	
+	<select id="getMemberReportStatus" resultType="String">
+		SELECT MEM_REPORTCONTENT FROM CGVMEMBER WHERE MEM_ID = #{id}
+	</select>
+	
+	
+	<update id="setSeatTableUpdate" >
+		UPDATE CGVSEAT SET S_SEAT = S_SEAT - #{seatCnt} 
+			WHERE S_MOVIENAME = #{vo.tk_movieName} 
+			AND S_TOWN = #{vo.tk_town} 
+			AND S_SCREENDATE = #{vo.tk_screenDate} 
+			AND S_SCREENTIME = #{vo.tk_screenTime}
+	</update>
+	
+	<update id="setPointInput">
+		UPDATE CGVMEMBER SET MEM_POINT = MEM_POINT + #{point} WHERE MEM_ID = #{id};
+	</update>
+	
+	<update id="getTicketCancel">
+		UPDATE CGVTICKET SET TK_CANCELSW = 1 WHERE TK_CD = #{cd};
+	</update>
+	
+	<update id="setMemberUsePointMinus">
+		UPDATE CGVMEMBER SET MEM_POINT = MEM_POINT - #{usePoint} WHERE MEM_ID = #{id}; 
+	</update>
+	
+	<update id="setMemberJucklipPoint">
+		UPDATE CGVMEMBER SET MEM_POINT = MEM_POINT + #{jucklip} WHERE MEM_ID = #{id};
+	</update>
+	
+	<update id="setAdminTodayAmount">
+		UPDATE CGVADMINMAIN SET TODAYAMOUNT = TODAYAMOUNT + #{totPrice};
+	</update>
+	
+	<update id="setReviewUpdate">
+		UPDATE CGVREVIEW SET 
+				RE_TITLE = #{vo.re_Title},
+				RE_CONTENT = #{vo.re_Content},
+				RE_RATING = #{vo.re_Rating}
+			WHERE IDX = #{vo.idx};
+	</update>
+	
+	<update id="setReviewReportSwUpdate">
+		UPDATE CGVREVIEW SET RE_REPORTSW = 2 WHERE IDX = #{idx}
+	</update>
+	
+	<update id="setTicketCancelSeatMinus">
+	  UPDATE CGVSEAT SET S_SEAT = S_SEAT + #{seatCnt} WHERE S_MOVIENAME = #{vo.tk_movieName} AND S_TOWN = #{vo.tk_town} AND S_SCREENDATE = #{vo.tk_screenDate} AND S_SCREENTIME = #{vo.tk_screenTime};
+	</update>
+	
+	<update id="setMovieGood">
+		UPDATE CGVREVIEW SET RE_GOOD = RE_GOOD + 1 WHERE IDX = #{idx}
+	</update>
+	
+	<insert id="setReviewInput">
+		INSERT INTO CGVREVIEW VALUES(DEFAULT,'',#{vo.re_Id},#{vo.re_Title},DEFAULT,DEFAULT,#{vo.re_Content},#{vo.re_MovieTitle},#{vo.re_Rating},DEFAULT);
+	</insert>
+	
+	<insert id="WishListAdd">
+		INSERT INTO CGVWISHLIST VALUES(DEFAULT,#{id},#{movieTitle},#{img},'');
+	</insert>
+	
+	<insert id="setTicketCreate">
+		INSERT INTO CGVTICKET VALUES(DEFAULT,#{vo.tk_cd},#{vo.tk_Id},#{vo.tk_movieName},#{vo.tk_screenType},#{vo.tk_town},#{vo.tk_screenDate},#{vo.tk_screenTime},#{vo.tk_seat},#{vo.tk_movieImg},#{vo.tk_adultno},#{vo.tk_teenno},#{vo.tk_childno},#{vo.tk_preferentialno},#{vo.tk_totPrice},#{vo.tk_QRcode},DEFAULT,#{vo.tk_usePoint},#{vo.tk_useCoupon});
+	</insert>
+	
+	<insert id="setSeatTableInput">
+		INSERT INTO CGVSEAT VALUES(#{vo.tk_movieName},#{vo.tk_town},#{vo.tk_screenDate},#{vo.tk_screenTime},#{seatCnt});	
+	</insert>
+	
+	<insert id="setReviewReport">
+		INSERT INTO CGVREPORT VALUES(DEFAULT,#{vo.part},#{vo.reportContentIdx},#{vo.reporterId},#{vo.reportPart},#{vo.reportReason},#{vo.reporterMail},DEFAULT,'')
+	</insert>
+	
+	<delete id="WishListDel">
+		DELETE FROM CGVWISHLIST WHERE WI_ID = #{id} AND WI_MOVIETITLE = #{movieTitle};
+	</delete>
+	
+	<delete id="getReviewDelete">
+		DELETE FROM CGVREVIEW WHERE IDX = #{idx};
+	</delete>
+	
+</mapper>

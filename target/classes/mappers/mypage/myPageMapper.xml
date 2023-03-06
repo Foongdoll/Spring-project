@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.green2209S_10.dao.MyPageDAO">
+	
+	<select id="getWishList" resultType="com.spring.green2209S_10.vo.CgvWishListVO">
+		SELECT * FROM CGVWISHLIST WHERE WI_ID = #{id};
+	</select>
+	
+	<select id="getMyTicket" resultType="com.spring.green2209S_10.vo.CgvTicketingPaymentVO">
+		SELECT * FROM CGVTICKET WHERE TK_ID = #{id} AND DATEDIFF(TK_SCREENDATE,NOW()) > 0;
+	</select>
+	
+	<select id="getMyViewMovieList" resultType="com.spring.green2209S_10.vo.CgvTicketingPaymentVO">
+		SELECT * FROM CGVTICKET WHERE TK_ID = #{id} AND 0 > DATEDIFF(TK_SCREENDATE,NOW());
+	</select>
+	
+	<select id="getMemberInfor" resultType="com.spring.green2209S_10.vo.CgvMemberVO">
+		SELECT * FROM CGVMEMBER WHERE MEM_ID = #{id}
+	</select>
+	
+	<select id="getMyReviewList" resultType="com.spring.green2209S_10.vo.CgvReviewVO">
+		SELECT * FROM CGVREVIEW WHERE RE_ID = #{id};
+	</select>
+	
+	<select id="getMyCoupon" resultType="com.spring.green2209S_10.vo.CgvCouponVO">
+		SELECT * FROM CGVCOUPON WHERE C_ID = #{id} AND 1 > TIMESTAMPDIFF(DAY,C_STARTDATE,NOW())
+	</select>
+	
+	<select id="getMyCouponList" resultType="com.spring.green2209S_10.vo.CgvCouponVO">
+		SELECT * FROM CGVCOUPON WHERE C_ID = #{id};
+	</select>
+	
+	<select id="getMyReportList" resultType="com.spring.green2209S_10.vo.CgvReportVO">
+		SELECT * FROM CGVREPORT WHERE REPORTERID = #{id}
+	</select>
+	
+	<update id="setWishCommentInput">
+		UPDATE CGVWISHLIST SET WI_COMMENT = #{vo.wi_Comment} where WI_MOVIETITLE = #{vo.wi_MovieTitle} AND WI_ID = #{id};
+	</update>
+	
+	<update id="setMyInforUpdate">
+			UPDATE CGVMEMBER SET MEM_NAME = #{vo.mem_name},
+				MEM_SCNUMBER = #{vo.mem_scNumber},
+				MEM_TEL = #{vo.mem_tel},
+				MEM_EMAIL = #{vo.mem_email},
+				MEM_PSWDQ = #{vo.mem_pswdQ},
+				MEM_PSWDA = #{vo.mem_pswdA},
+				MEM_PHOTO = #{vo.mem_photo},
+				MEM_SPHOTO = #{vo.mem_sPhoto} WHERE MEM_ID = #{vo.mem_id};		
+	</update>
+	
+	<update id="setMemberDel">
+		UPDATE CGVMEMBER SET MEM_MSTATUS = '탈퇴신청' WHERE MEM_ID = #{id}
+	</update>
+	
+	
+	<delete id="getWishDelete">
+		DELETE FROM CGVWISHLIST WHERE WI_MOVIETITLE = #{movieTitle} AND WI_ID = #{id};
+	</delete>
+	
+	<insert id="setMyCouponInput">
+		INSERT INTO CGVCOUPON VALUES(DEFAULT,#{id},'날이면 날마다오는 매일 하루 쿠폰',#{couponCode},#{content},DEFAULT,DATE_ADD(NOW(), INTERVAL 2 MONTH),DEFAULT);
+	</insert>
+		
+</mapper>

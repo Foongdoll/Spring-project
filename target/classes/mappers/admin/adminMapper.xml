@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.green2209S_10.dao.AdminDAO">
+	
+	<select id="getAdminMain" resultType="com.spring.green2209S_10.vo.CgvAdminMainVO">
+		SELECT * FROM CGVADMINMAIN;
+	</select>
+	
+	<select id="getMemberList" resultType="com.spring.green2209S_10.vo.CgvMemberVO">
+		SELECT * FROM CGVMEMBER <if test="searchStr != null"><if test="part != ''">WHERE ${part} LIKE CONCAT('%',#{searchStr},'%')</if></if>ORDER BY MEM_IDX DESC LIMIT #{startIndexNo},#{pageSize};
+	</select>
+
+	<select id="getTicketList" resultType="com.spring.green2209S_10.vo.CgvTicketingPaymentVO">
+		SELECT * FROM CGVTICKET <if test="part != null">WHERE ${part} LIKE CONCAT('%',#{searchStr},'%')</if> ORDER BY TK_IDX DESC LIMIT #{startIndexNo},#{pageSize};
+	</select>
+
+	<select id="getTotRecCnt" resultType="int">
+		SELECT COUNT(*) FROM ${tableName} <if test="sw == 1">WHERE ${part} LIKE CONCAT('%',#{searchStr},'%')</if> 
+	</select>
+	
+	<select id="getMemberPoint" resultType="int">
+		SELECT MEM_POINT FROM CGVMEMBER WHERE MEM_ID = #{id};
+	</select>
+	
+	<select id="getTicketInforList" resultType="com.spring.green2209S_10.vo.CgvTicketingPaymentVO">
+		SELECT * FROM CGVTICKET ORDER BY TK_IDX DESC LIMIT 5;
+	</select>
+	
+	<select id="getMovieTitleList" resultType="String">
+		SELECT MOVIETITLE FROM CGVMOVIECHART;
+	</select>
+	
+	<select id="getMoiveChartSelect" resultType="com.spring.green2209S_10.vo.CgvMovieChartVO">
+		SELECT * FROM CGVMOVIECHART WHERE MOVIETITLE = #{movieTitle};	
+	</select>
+	
+	<select id="getMainHeaderImgGet" resultType="com.spring.green2209S_10.vo.CgvAdminContentVO">
+		SELECT * FROM CGVMAINHEADERIMG;
+	</select>
+	
+	<select id="getReviewReportList" resultType="com.spring.green2209S_10.vo.CgvReportVO">
+		SELECT * FROM CGVREPORT <if test="searchStr != null"><if test="part != ''">WHERE ${part} LIKE CONCAT('%',#{searchStr},'%')</if></if> ORDER BY IDX DESC LIMIT #{startIndexNo},#{pageSize};
+	</select>
+	
+	<select id="getReportContentMemberGet" resultType="com.spring.green2209S_10.vo.CgvReviewVO">
+		SELECT * FROM CGVREVIEW WHERE IDX = #{idx};
+	</select>
+
+	<select id="getMemberAllList" resultType="com.spring.green2209S_10.vo.CgvMemberVO">
+		SELECT * FROM CGVMEMBER;
+	</select>
+	
+	<select id="getAdminCouponAllList" resultType="com.spring.green2209S_10.vo.CgvCouponVO">
+		SELECT * FROM CGVCOUPON <if test="searchStr != null"><if test="part != ''">WHERE ${part} LIKE CONCAT('%',#{searchStr},'%')</if></if> ORDER BY IDX DESC LIMIT #{startIndexNo},#{pageSize};
+	</select>
+	
+	<select id="getMoiveImg" resultType="String">
+		SELECT IMG FROM CGVMOVIECHART WHERE MOVIETITLE = #{movieTitle}
+	</select>
+
+	<select id="getAdminReport" resultType="com.spring.green2209S_10.vo.CgvReportVO">
+		SELECT * FROM CGVREPORT ORDER BY IDX DESC LIMIT 5;
+	</select>
+	
+	<select id="getAdminBoard" resultType="com.spring.green2209S_10.vo.CgvBoardVO">
+		SELECT * FROM CGVBOARD ORDER BY IDX DESC LIMIT 5;
+	</select>
+	
+	<select id="getTotTicketSale" resultType="com.spring.green2209S_10.vo.CgvTicketingPaymentVO">
+		SELECT TK_MOVIENAME,COUNT(*) AS tk_saleCnt FROM CGVTICKET group by TK_MOVIENAME;
+	</select>
+
+	<update id="todayReset">
+		UPDATE CGVADMINMAIN SET TODAY = 0;
+	</update>
+	
+	<update id="todayAmountReset">
+		UPDATE CGVADMINMAIN SET TODAYAMOUNT = 0;
+	</update>
+	
+	<update id="setTicketCancelCdSwUpdate">
+		UPDATE CGVTICKET SET TK_CANCELSW = 2 WHERE TK_CD = #{cd};
+	</update>	
+	
+	<update id="setReportStatusUpdate">
+		UPDATE CGVREPORT SET REPORTSTATUS = #{vo.reportStatus} WHERE IDX = #{vo.idx}
+	</update>
+	
+	<update id="setMemberReportContentUpdate">
+		UPDATE CGVMEMBER SET MEM_REPORTCONTENT = #{reportStatus}, MEM_REPORTDATE = NOW() WHERE MEM_ID = #{id};
+	</update>
+	
+	<update id="setMemberReportContentUpdateCron">
+		<if test="sw == 1">
+		UPDATE CGVMEMBER SET MEM_REPORTCONTENT = '' WHERE MEM_ID = #{id} AND TIMESTAMPDIFF(DAY,#{reportDate},NOW()) > 0 ;
+		</if>
+		<if test="sw == 3">
+		UPDATE CGVMEMBER SET MEM_REPORTCONTENT = '' WHERE MEM_ID = #{id} AND TIMESTAMPDIFF(DAY,#{reportDate},NOW()) > 2 ;
+		</if>
+		<if test="sw == 30">
+		UPDATE CGVMEMBER SET MEM_REPORTCONTENT = '' WHERE MEM_ID = #{id} AND TIMESTAMPDIFF(DAY,date_add(#{reportDate},INTERVAL 1 MONTH),NOW()) > 0;
+		</if>
+	</update>
+	
+	<update id="setAdminMemberPointUpdate">
+		UPDATE CGVMEMBER SET MEM_POINT = MEM_POINT + #{point} WHERE MEM_ID = #{id};
+	</update>
+	
+	<update id="setAdminPointDeduction">
+		UPDATE CGVMEMBER SET MEM_POINT = MEM_POINT - #{point} WHERE MEM_IDX = #{idx};
+	</update>
+	
+	<insert id="setMainContetnInput">
+		INSERT INTO CGVMAINHEADERIMG VALUES(#{img},#{title},#{content},#{sw});
+	</insert>
+	
+	<insert id="setAdminCreateCoupon">
+		INSERT INTO CGVCOUPON VALUES(DEFAULT,#{vo.c_id},#{vo.c_name},#{vo.c_cd},#{vo.c_content},DEFAULT,DATE_ADD(NOW(), INTERVAL 2 MONTH),DEFAULT);
+	</insert>
+
+	
+	<delete id="setMainHeaderImgDelete">
+		DELETE FROM CGVMAINHEADERIMG WHERE MOVIETITLE = #{movieTitle}
+	</delete>
+	
+	<delete id="setAdminCouponDelete">
+		DELETE FROM CGVCOUPON WHERE IDX = #{idx};
+	</delete>	
+	
+	<delete id="getAdminMemberDel">
+		DELETE FROM CGVMEMBER WHERE MEM_ID = #{id}
+	</delete>
+	
+	
+	
+</mapper>

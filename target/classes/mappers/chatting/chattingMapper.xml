@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.green2209S_10.dao.ChatDAO">
+	
+	<select id="getRoomSw" resultType="String">
+		SELECT roomId FROM CGVCHAT WHERE SENDER = #{nickName} order by mdate desc limit 1;
+	</select>
+	
+	<select id="getChatContentList" resultType="com.spring.green2209S_10.vo.ChatContentVO">
+		SELECT * FROM CGVCHATCONTENT limit 5;
+	</select>
+	
+	<select id="getChatSenderList" resultType="com.spring.green2209S_10.vo.ChatContentVO">
+		SELECT SENDER FROM CGVCHATCONTENT WHERE READSW = 0 AND SENDER != '관리자' GROUP BY SENDER;
+	</select>
+	
+	<select id="getChatRoomContent" resultType="com.spring.green2209S_10.vo.ChatContentVO">
+		SELECT * FROM CGVCHATCONTENT WHERE SENDER = #{sender} AND READSW = 0;
+	</select>
+	
+	<select id="getChatDiffList" resultType="com.spring.green2209S_10.vo.ChatContentVO">
+		SELECT TIMESTAMPDIFF(HOUR,MDATE,NOW()) AS timeDiff FROM CGVCHATCONTENT WHERE SENDER = #{sender}
+	</select>
+	
+	<select id="getMemberLastDate" resultType="com.spring.green2209S_10.vo.CgvMemberVO">
+		SELECT MEM_LASTDATE FROM CGVMEMBER WHERE mem_nickName = #{sender}
+	</select>
+	
+	<select id="getMemberOnOff" resultType="com.spring.green2209S_10.vo.CgvMemberVO">
+		SELECT * FROM CGVMEMBER
+	</select>
+	
+	<select id="getReadSw" resultType="String">
+		SELECT READSW FROM CGVCHATCONTENT WHERE SENDER = #{sender} AND READSW = 0 LIMIT 1
+	</select>
+
+	<update id="setChatReadSwONE">
+		UPDATE CGVCHATCONTENT SET READSW = 1 WHERE SENDER = #{sender};
+	</update>
+	
+	
+	<insert id="setChatRoom">
+		INSERT INTO CGVCHAT VALUES(#{roomId},#{nickName},'입장',DEFAULT);
+	</insert>
+	
+	<insert id="setContentSave">
+		INSERT INTO CGVCHATCONTENT VALUES(#{roomId},#{sender},#{message},DEFAULT,DEFAULT);
+	</insert>
+	
+	<delete id="setChatDelete">
+		DELETE FROM CGVCHAT WHERE SENDER = #{sender}
+	</delete>
+	
+	
+</mapper>

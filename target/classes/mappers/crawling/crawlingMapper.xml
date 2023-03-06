@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.green2209S_10.dao.CrawlingDAO">
+
+	<select id="getCGV_MainImg" resultType="com.spring.green2209S_10.vo.MovieCrawlingVO">
+		select * from cgvMainImg where img like concat('%','320','%') group by img order by idx limit 19;
+	</select>
+	
+	<insert id="setCGV_MainImgInput">
+		insert into cgvMainImg values(default,#{img},#{movieName})
+	</insert>
+	
+	<insert id="setCGV_ChartInfoInput">
+		insert into cgvMovieChart values(default,#{rank},#{img},#{movieAge},#{movieTitle},#{movieRate},#{movieOpenDate},#{likeNum});
+	</insert>
+
+	<insert id="setCGV_FastTicketingMovieNameInput">
+		insert into fastTicketing_movieName values (default,#{movieTitle});
+	</insert>
+	
+	<insert id="setCGV_MovieDetailDBsave">
+		insert into CGVMOVIEDETAIL values (#{vo.img},#{vo.movieStatus},#{vo.movieTitleKo},#{vo.movieTitleEn},#{vo.movieRate},#{vo.movieStory},#{vo.screenType},#{vo.movieDirector},#{vo.movieActor},#{vo.movieGenre},#{vo.movieOpenDate});
+	</insert>
+	
+</mapper>

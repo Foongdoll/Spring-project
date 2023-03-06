@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.green2209S_10.dao.BoardDAO">
+
+	<select resultType="com.spring.green2209S_10.vo.CgvBoardVO" id="getBoardList">select * from cgvboard order by idx desc limit #{startIndexNo},#{pageSize}; </select>
+	
+	<select resultType="com.spring.green2209S_10.vo.CgvBoardVO" id="getBoardContent">select * from cgvboard where idx = #{idx}; </select>
+	
+	<!-- <select resultType="com.spring.green2209S_10.vo.CgvBoardVO" id="getBoardGoodCheck">select * from good where partIdx=#{partIdx} and part=#{part} and mid=#{mid}; </select> -->
+
+<!-- <![CDATA[idx < 10]]> -->
+
+
+	<select resultType="com.spring.green2209S_10.vo.CgvBoardVO" id="getPrevNext">
+	select idx,title from cgvboard where idx in ((select idx from cgvboard where 
+	<![CDATA[idx < #{idx}]]>order by idx desc limit 1),(select idx from cgvboard where 
+	<![CDATA[idx > #{idx}]]>limit 1)); 
+	</select>
+
+	<select resultType="com.spring.green2209S_10.vo.CgvCommentVO" id="getBoardReply">select * from CGVCOMMENT where boardIdx = #{idx} order by groupId, level, idx; </select>
+	
+	<select resultType="String" id="getMaxLevelOrder">select max(levelOrder) from CGVCOMMENT where boardIdx = #{boardIdx}; </select>
+	
+	<select resultType="String" id="getMaxGroupId">select max(groupId) from CGVCOMMENT where boardIdx = #{boardIdx}; </select>
+	
+	<update id="setBoardReadNum">update cgvboard set readNum = readNum + 1 where idx = #{idx}; </update>
+	
+	<update id="setBoardGoodPlus">update cgvboard set good = good + 1 where idx = #{idx}; </update>
+	
+	<update id="setGoodPlusMinus">update cgvboard set good = good + #{goodCnt} where idx = #{idx}; </update>
+	
+	<update id="boardGoodFlagCheck">update cgvboard set good = good + #{gFlag} where idx = #{idx}; </update>
+	
+	<update id="setBoardUpdateOk">update cgvboard set title=#{vo.title}, email=#{vo.email}, content=#{vo.content}, hostIp=#{vo.hostIp} where idx = #{vo.idx}; </update>
+	
+	<update id="setGoodUpdate">update cgvboard set good = good + #{item} where idx = #{idx}; </update>
+	
+	<update id="setLevelOrderPlusUpdate">update CGVCOMMENT set levelOrder = levelOrder + 1 where boardIdx = #{replyVo.boardIdx} and groupId = #{replyVo.groupId} and levelOrder > #{replyVo.levelOrder}; </update>
+	
+	<update id="setBoardReplyUpdate">update CGVCOMMENT set content = #{content}, hostIp = #{hostIp} where idx = #{idx}; </update>
+	
+	<insert id="setBoardInput">insert into cgvboard values (default,#{vo.nickName},#{vo.title},#{vo.content},default,#{vo.hostIp},default,default,#{vo.mid}); </insert>
+	
+	<insert id="setGoodDBInput">insert into good values (default,#{goodVo.part},#{goodVo.partIdx},#{goodVo.mid}); </insert>
+	
+	<insert id="setBoardReplyInput">insert into CGVCOMMENT values (default,#{replyVo.boardIdx},#{replyVo.mid},#{replyVo.nickName},default,#{replyVo.hostIp},#{replyVo.content},#{replyVo.groupId},default,default); </insert>
+	
+	<insert id="setBoardReplyInput2">insert into CGVCOMMENT values (default,#{replyVo.boardIdx},#{replyVo.mid},#{replyVo.nickName},default,#{replyVo.hostIp},#{replyVo.content},#{replyVo.groupId},#{replyVo.level},#{replyVo.levelOrder}); </insert>
+	
+	<delete id="setBoardDeleteOk">delete from cgvboard where idx = #{idx}; </delete>
+	
+	<delete id="setGoodDBDelete">delete from good where idx = #{idx}; </delete>
+	
+	<delete id="setBoardReplyDeleteOk">delete from CGVCOMMENT where idx = #{idx}; </delete>
+			
+</mapper>
